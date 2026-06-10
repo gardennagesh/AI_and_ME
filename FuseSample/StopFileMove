@@ -1,0 +1,103 @@
+/* I started use of AI for code generation and modify it for needs */
+/* This programme stops moving away from specific directory */
+/* Within same directory file can be renamed */
+
+#define FUSE_USE_VERSION 31
+
+#include <fuse3/fuse.h>
+#include <stdio.h>
+#include <string.h>
+#include <errno.h>
+#include <fcntl.h>
+#include <unistd.h>
+
+// Root directory backing store
+static const char *rootdir = "/home/storage";
+
+// full path
+static void full_path(char fpath[1024], const char *path) {
+    strcpy(fpath, rootdir);
+    strncat(fpath, path, 1024 - strlen(rootdir) - 1);
+}
+
+// extract directory
+static void get_dir(const char *path, char *dir) {
+    strcpy(dir, path);
+    char *last = strrchr(dir, '/');
+    if (last && last != dir)
+        *last = '\0';
+    else
+        strcpy(dir, "/");
+}
+
+static int my_rename(const char *from, const char *to, unsigned int flags) {
+    (void) flags;
+
+    char from_dir[512], to_dir[512];
+
+    get_dir(from, from_dir);
+    get_dir(to, to_dir);
+
+    // Compare directories
+    if (strcmp(from_dir, to_dir) != 0) {
+        printf("NOT ALLOWED AS MOVE DENIED: %s --> %s\n", from, to);
+        return -EPERM;  // Permission denied
+    }
+
+    // Allow rename within same directory
+    char ffrom[1024], fto[1024];
+    full_path(ffrom, from);
+    full_path(fto, to);
+
+    if (rename(ffrom, fto) == -1)
+        return -errno;
+
+    return 0;
+}
+
+/* Pass-through operations */
+static int my_getattr(const char *path, struct stat *stbuf,
+                     struct fuse_file_info *fi) {
+    (void) fi;
+    char fpath[1024];
+    full_path(fpath, path);
+
+    int res = lstat(fpath, stbuf);
+    if (res == -1)
+        return -errno;
+
+    return 0;
+}
+
+static int my_readdir(const char *path, void *buf, fuse_fill_dir_t filler,
+                      off_t offset, struct fuse_file_info *fi,
+                      enum fuse_readdir_flags flags) {
+    (void) offset;
+    (void) fi;
+    (void) flags;
+
+    char fpath[1024];
+    full_path(fpath, path);
+
+    DIR *dp = opendir(fpath);
+    if (dp == NULL)
+        return -errno;
+
+    struct dirent *de;
+    while ((de = readdir(dp)) != NULL) {
+        filler(buf, de->d_name, NULL, 0, 0);
+    }
+
+    closedir(dp);
+    return 0;
+}
+
+static struct fuse_operations my_oper = {
+    .getattr = my_getattr,
+    .readdir = my_readdir,
+    .rename  = my_rename, 
+};
+
+int main(int argc, char *argv[]) {
+    return fuse_main(argc, argv, &my_oper, NULL);
+}
