@@ -3,7 +3,7 @@
 /* Great tool and saves huge time. Those who better know concepts and internals of OS subsystems... Life made Easy */
 /* This is a simple FUSE programme to demo FS for creating only files starting with my_ preix */
 /* Install:  libfuse3-dev fuse3 */
-/* Compile: gcc myfs.c -o myfs `pkg-config fuse3 --cflags --libs` */
+/* Compile success: gcc myfs.c -lfuse3 -o myfs */
 /* Usage: mkdir mountpoint; ./myfs mntpoint */
 
 

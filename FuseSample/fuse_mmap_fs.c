@@ -1,11 +1,11 @@
 /* File system based on user access for a file */
 /* Sample to show memmory map the files which threshold frequency access cross 10 a day */
-/* Compile: gcc fuse_mmap_fs.c -o fuse_mmap_fs -lfuse */
 /* CAT any file in this FS and after 10 time a file will be memory mapped */
+/* Compiled success: gcc fuse_mmap_fs.c -lfuse3 -o fuse_mmap */
 
 #define FUSE_USE_VERSION 31
 
-#include <fuse.h>
+#include <fuse3/fuse.h>
 #include <stdio.h>
 #include <string.h>
 #include <errno.h>

@@ -1,7 +1,7 @@
 /* Just thought of this is simple FUSE FS for Auditing the file */
 /* Whenever a time stamps of a file altered it logs basic attributes of file */
 /* It maintains another file of same name suffixed with .hist in record_hist dir*/
-/* Compile: gcc histfs.c -o histfs `pkg-config fuse3 --cflags --libs` */
+/* Compile success: gcc histfs.c -lfuse3 -o histfs  */
 /* Usage: mkdir record_hist; mkdir mntpoint; ./histfs mntpoint; cd mntpoint; touch file.txt; echo "edit1" > file.txt; echo "edit2" >> file.txt */
 /* Observe at the content of file.txt.hist for event logs. An Daemon service is usefull to monitor specific or important files and take action accordingly*/
 
@@ -15,6 +15,8 @@
 #include <pwd.h>
 #include <time.h>
 #include <sys/stat.h>
+#include <sys/types.h>
+#include <dirent.h>
 #include <limits.h>
 
 static const char *rootdir = "./record_hist";

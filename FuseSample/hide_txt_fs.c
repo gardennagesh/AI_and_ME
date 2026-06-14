@@ -3,10 +3,11 @@
 /* A simple programme which hides .txt suffixed files */
 /* This programme uses FUSE lib and FUSE API */
 /* Install FUSE lib to compile this */
-/* Compile: cc -Wall hide_txt_fs.c -o hide_txt_fs `pkg-config fuse --cflags --libs`*/
+/* This sample is version 2 src.Edit this src to be in compatible for make use of FUSE 3. Otherwise this src compilation fails */
+/* Todo: After edit complie  gcc hide_txt_fs.c -lfuse3 -o hide_txt_fs */
 /* Usage: mkdir /tmp/mntpoint; ./hide_txt_fs /my_src_dir /tmp/mntpoint */
 
-#include <fuse.h>
+#include <linux/fuse.h>
 #include <stdio.h>
 #include <string.h>
 #include <errno.h>

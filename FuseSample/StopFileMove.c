@@ -1,6 +1,7 @@
 /* I started use of AI for code generation and modify it for needs */
 /* This programme stops moving away from specific directory */
 /* Within same directory file can be renamed */
+/* Compile success: gcc StopFileMove.c -lfuse3 -o stop_move_fs */
 
 #define FUSE_USE_VERSION 31
 
@@ -10,6 +11,8 @@
 #include <errno.h>
 #include <fcntl.h>
 #include <unistd.h>
+#include <sys/types.h>
+#include <dirent.h>
 
 // Root directory backing store
 static const char *rootdir = "/home/storage";

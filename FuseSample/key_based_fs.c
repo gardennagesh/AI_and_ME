@@ -1,13 +1,14 @@
 /* Lets implement a simple security FS using a directory KEY */
 /* A secret KEY is known only to the specific USERS. And this KEY used for listing directory */
 /* Inside any directory of this FS files will be listed only if dirname.KEY file would available */
-/* Compile: cc keyfs.c `pkg-config fuse3 --cflags --libs` -o keyfs */
+/* Compile success: gcc keyfs.c -lfuse3 -o keyfs */
 /* Usage: mkdir /tmp/mountpoint; ./keyfs /tmp/mountpoint;ls /tmp/mountpoint/this_dir;touch /tmp/backing/this_dir/this_dir.KEY;ls /tmp/mountpoint/this_dir */
 
 #define FUSE_USE_VERSION 31
-#include <fuse.h>
+#include <fuse3/fuse.h>
 #include <stdio.h>
 #include <string.h>
+#include <sys/types.h>
 #include <dirent.h>
 #include <errno.h>
 #include <libgen.h>
